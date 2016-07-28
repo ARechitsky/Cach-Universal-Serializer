@@ -21,14 +21,13 @@
 </Method>
 
 <Method name="InternalSerialize">
-<Abstract>1</Abstract>
 <FormalSpec>object,stream:%Stream.Object</FormalSpec>
 <Implementation><![CDATA[
 	if ('$isobject(object)) {
 		do ..InternalSerializeDataType(object, stream)
 	}
 	elseif(object.%IsA("%Library.Object")){
-		do ..InternalSerializeDataType(object, stream)
+		do ..InternalSerializeObject(object, stream)
 	}
 	elseif(object.%IsA("%Library.Array")){
 		do ..InternalSerializeArray(object, stream)
@@ -43,11 +42,11 @@
 <FormalSpec>object,stream:%Stream.Object,maxLen:%Integer=32656</FormalSpec>
 <ReturnType>%String</ReturnType>
 <Implementation><![CDATA[
-	set oStream = $select($data(stream):stream, 1:##class(%Stream.TmpBinary).%New())
+	set oStream = $select($data(stream): stream, 1: ##class(%Stream.TmpBinary).%New())
 	do ..InternalSerialize(object, oStream)
 	if ('$data(stream)){
-		if (stream.Size>maxLen) $$$throw("Serialized object is too long for %String")
-		set ret = stream.Read(.maxLen, .sc)
+		if (oStream.Size > maxLen) $$$throw("Serialized object is too long for %String")
+		set ret = oStream.Read(.maxLen, .sc)
 		$$$do(sc)
 	}
 	else{

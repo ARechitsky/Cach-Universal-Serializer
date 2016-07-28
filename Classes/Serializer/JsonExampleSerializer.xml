@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Serializer.JsonExampleSerializer">
+<Super>Serializer.AbstractSerializer</Super>
+<TimeCreated>64127,51874.197164</TimeCreated>
+
+<Method name="InternalSerializeArray">
+<FormalSpec>object:%Array,stream:%Stream.Object</FormalSpec>
+<Implementation><![CDATA[
+	$$$do(stream.Write("["))
+	set iterator = object.$getIterator()
+	set isFirst = $$$YES
+	while(iterator.$getNext(.key,.val)){
+		if ('isFirst) {
+			$$$do(stream.Write(","))
+		}
+		else{
+			set isFirst = $$$NO
+		}
+		do ..InternalSerialize(val, stream)
+	}
+	$$$do(stream.Write("]"))
+]]></Implementation>
+</Method>
+
+<Method name="InternalSerializeDataType">
+<FormalSpec>object:%DataType,stream:%Stream.Object</FormalSpec>
+<Implementation><![CDATA[
+	set object = $replace(object, "\", "\\")
+	set object = $replace(object, """", "\""")
+	$$$do(stream.Write(""""_object_""""))
+]]></Implementation>
+</Method>
+
+<Method name="InternalSerializeObject">
+<FormalSpec>object:%Object,stream:%Stream.Object</FormalSpec>
+<Implementation><![CDATA[
+	$$$do(stream.Write("{"))
+	set iterator = object.$getIterator()
+	set isFirst = $$$YES
+	while(iterator.$getNext(.key,.val)){
+		if ('isFirst) {
+			$$$do(stream.Write(","))
+		}
+		else{
+			set isFirst = $$$NO
+		}
+		do ..InternalSerializeDataType(key, stream)
+		$$$do(stream.Write(":"))
+		do ..InternalSerialize(val, stream)
+	}
+	$$$do(stream.Write("}"))
+]]></Implementation>
+</Method>
+</Class>
+</Export>
