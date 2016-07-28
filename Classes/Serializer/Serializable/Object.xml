@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Serializer.Serializable.Object">
+<Super>%RegisteredObject</Super>
+<TimeCreated>64127,56854.553728</TimeCreated>
+
+<Parameter name="internalStorageProp">
+<Type>%String</Type>
+<Default>%data</Default>
+</Parameter>
+
+<Property name="%data">
+<Type>%Object</Type>
+</Property>
+
+<Method name="%OnNew">
+<Private>1</Private>
+<ReturnType>%Status</ReturnType>
+<ServerOnly>1</ServerOnly>
+<Implementation><![CDATA[
+	set ..%data = ##class(%Object).%New()
+	Quit $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="GetProperties">
+<ClassMethod>1</ClassMethod>
+<CodeMode>objectgenerator</CodeMode>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	set ret = ""
+	for i = 1:1:%compiledclass.Properties.Count(){
+		set prop = %compiledclass.Properties.GetAt(i)
+		if (prop.Name = ..#internalStorageProp) continue
+		if (prop.Name = "%%OID") continue
+		set ret = ret_""""_prop.Name_""","
+	}
+	if (ret'=""){
+		set ret = ret_"$lb("_$e(ret,1,*-1)_")"
+	}
+	else {
+		set ret = """"""
+	}
+	do %code.WriteLine(" return "_ret)
+]]></Implementation>
+</Method>
+
+<Method name="%DispatchGetProperty">
+<Description><![CDATA[
+ Property dispatch method to catch references to 
+ virtual properties. <br>
+ This should not be called directly.<br>]]></Description>
+<Internal>1</Internal>
+<FormalSpec>propertyName:%String(MAXLEN="")</FormalSpec>
+<ServerOnly>1</ServerOnly>
+<Implementation><![CDATA[	return $property(..%data, propertyName)
+]]></Implementation>
+</Method>
+
+<Method name="%DispatchSetProperty">
+<Description><![CDATA[
+ Property dispatch method to catch references to 
+ virtual properties.<br>
+ This should not be called directly.<br>]]></Description>
+<Internal>1</Internal>
+<FormalSpec>propertyName:%String(MAXLEN=""),value:%String(MAXLEN="")</FormalSpec>
+<ServerOnly>1</ServerOnly>
+<Implementation><![CDATA[    set $property(..%data, propertyName) = value
+]]></Implementation>
+</Method>
+
+<Method name="GetStaticIterator">
+<ClassMethod>1</ClassMethod>
+<ReturnType>StaticPropertyIterator</ReturnType>
+<Implementation><![CDATA[	ret ##class(StaticPropertyIterator).%New(..GetProperties())
+]]></Implementation>
+</Method>
+
+<Method name="GetIterator">
+<ReturnType>DynamicPropertyIterator</ReturnType>
+<Implementation><![CDATA[	ret ##class(DynamicPropertyIterator).%New(..GetProperties(), ..%data.$getIterator(), $this)
+]]></Implementation>
+</Method>
+</Class>
+</Export>

@@ -7,7 +7,7 @@
 
 <Method name="InternalSerializeObject">
 <Abstract>1</Abstract>
-<FormalSpec>object:%Object,stream:%Stream.Object</FormalSpec>
+<FormalSpec>object:Serializer.Serializable.Object,stream:%Stream.Object</FormalSpec>
 </Method>
 
 <Method name="InternalSerializeArray">
@@ -26,7 +26,7 @@
 	if ('$isobject(object)) {
 		do ..InternalSerializeDataType(object, stream)
 	}
-	elseif(object.%IsA("%Library.Object")){
+	elseif(object.%IsA("Serializer.Serializable.Object")){
 		do ..InternalSerializeObject(object, stream)
 	}
 	elseif(object.%IsA("%Library.Array")){
