@@ -72,21 +72,6 @@
 		}
 		$$$do(stream.Write($c(b)))
 	}
-	/*	do stream.Rewind()
-	s a = 0
-	s power = 1
-	while ('stream.AtEnd ){
-		set b = stream.Read(1)
-		s b = $A(b)
-		if (b >= 128) {
-			s b=b-128
-		}
-		
-		s a = a + (b*power)
-		set power = power * 128
-	}
-	$$$do(stream.Write($c(a)))
-	*/
 ]]></Implementation>
 </Method>
 
