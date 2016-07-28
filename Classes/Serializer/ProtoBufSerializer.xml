@@ -13,6 +13,24 @@
 		set tag = metadata.PropToTag(prop)
 		set propVal = $property(object, prop)
 		set type = $s($number(propVal)'="": 0, 1: 2)
+		$$$do(stream.Write((tag * 8) + type))
+		if (type = 2) {
+			set propStream = ##class(%Stream.TmpBinary).%New()
+			do ..InternalSerialize(propVal, propStream)
+			set len = propStream.Size
+			$$$do(stream.Write(len))
+			$$$do(propStream.Rewind())
+			while(propStream.AtEnd){
+				set read = stream.Read()
+				$$$do(stream.Write(read))
+			}
+		}
+		elseif (type = 0){
+			do ..InternalSerialize(propVal, stream)
+		}
+		else {
+			$$$throw("it's not valid type")
+		}
 	}
 ]]></Implementation>
 </Method>
@@ -50,7 +68,7 @@
 		s b = a#128
 		s a = a\128
 		if (a '= 0){
-			s b = b+128
+			s b = b + 128
 		}
 		$$$do(stream.Write($c(b)))
 	}

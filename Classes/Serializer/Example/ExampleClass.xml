@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Serializer.Example.ExampleClass">
+<Super>Serializer.Serializable.Object</Super>
+<TimeCreated>64127,71172.380697</TimeCreated>
+
+<Property name="qwe">
+<Type>%Integer</Type>
+</Property>
+
+<Property name="qaz">
+<Type>%String</Type>
+</Property>
+
+<Property name="asd">
+<Type>Serializer.Example.ExampleClass</Type>
+</Property>
+</Class>
+</Export>
