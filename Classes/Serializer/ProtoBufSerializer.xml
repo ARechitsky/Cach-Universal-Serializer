@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Serializer.ProtoBufSerializer">
+<Super>Serializer.AbstractSerializer</Super>
+<TimeCreated>64127,51157.511037</TimeCreated>
+
+<Method name="InternalSerializeDataType">
+<FormalSpec>object:%DataType,stream:%Stream.Object</FormalSpec>
+<Implementation><![CDATA[	do ..InternalSerializeVarInt(object)
+]]></Implementation>
+</Method>
+
+<Method name="InternalSerializeVarInt">
+<FormalSpec>object:%DataType,stream:%Stream.Object</FormalSpec>
+<Implementation><![CDATA[
+	set a = object
+	set b = 0
+	set f = $$$YES
+	while (a'=0)
+	{ 
+		s b = a#128
+		s a = a\128
+		if (f){
+			s b = b+128
+			s f = $$$NO
+		}
+		$$$do(stream.Write($c(b)))
+		
+	}
+	do stream.Rewind()
+	s a = 0
+	s power = 1
+	while ('stream.AtEnd ){
+		set b = stream.Read(1)
+		s b = $A(b)
+		if (b >= 128) {
+			s b=b-128
+		}
+		s a = a + (b*power)
+		set power = power * 128
+	}
+]]></Implementation>
+</Method>
+</Class>
+</Export>
