@@ -4,13 +4,17 @@
 <Super>%RegisteredObject</Super>
 <TimeCreated>64127,56854.553728</TimeCreated>
 
-<Parameter name="internalStorageProp">
+<Parameter name="internalProp">
 <Type>%String</Type>
-<Default>%data</Default>
+<Expression>$lb("%%OID","%data","%prop")</Expression>
 </Parameter>
 
 <Property name="%data">
 <Type>%Object</Type>
+</Property>
+
+<Property name="%prop">
+<MultiDimensional>1</MultiDimensional>
 </Property>
 
 <Method name="%OnNew">
@@ -19,6 +23,9 @@
 <ServerOnly>1</ServerOnly>
 <Implementation><![CDATA[
 	set ..%data = ##class(%Object).%New()
+	for i=1:1:$ll(..GetProperties()){
+		set ..%prop($li(..GetProperties(),i)) = ""
+	}
 	Quit $$$OK
 ]]></Implementation>
 </Method>
@@ -31,8 +38,7 @@
 	set ret = ""
 	for i = 1:1:%compiledclass.Properties.Count(){
 		set prop = %compiledclass.Properties.GetAt(i)
-		if (prop.Name = ..#internalStorageProp) continue
-		if (prop.Name = "%%OID") continue
+		if ($lf(..#internalProp, prop.Name)>0) continue
 		set ret = ret_""""_prop.Name_""","
 	}
 	if (ret'=""){
@@ -79,6 +85,13 @@
 <Method name="GetIterator">
 <ReturnType>DynamicPropertyIterator</ReturnType>
 <Implementation><![CDATA[	ret ##class(DynamicPropertyIterator).%New(..GetProperties(), ..%data.$getIterator(), $this)
+]]></Implementation>
+</Method>
+
+<Method name="HasProperty">
+<FormalSpec>propertyName:%String(MAXLEN="")</FormalSpec>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[	return $data(..%prop(propertyName)) || ..%data.$isDefined(propertyName)
 ]]></Implementation>
 </Method>
 </Class>
