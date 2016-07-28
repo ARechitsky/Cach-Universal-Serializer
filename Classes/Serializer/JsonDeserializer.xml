@@ -8,31 +8,27 @@
 <FormalSpec>stream:%Stream.Object,classname:%String</FormalSpec>
 <Implementation><![CDATA[
 	if ($classmethod(classname, "%IsA", "Serializer.Serializable.Object")){
-		return ..ConvertVal(##class(%Object).$fromJSON(stream), classname)
+		return ..ConvertVal(##class(%Object).$fromJSON(stream)).Convert(classname)
 	}
 	elseif ($classmethod(classname, "%IsA", "%Array")){
 		return ..ConvertVal(##class(%Array).$fromJSON(stream))
 	}
 	else{
-		$$$throw("Expected serializable object or datatype, got '"_classname_"'")
+		$$$throw("Expected serializable object, got '"_classname_"'")
 	}
 ]]></Implementation>
 </Method>
 
-<Method name="FillObject">
-<FormalSpec>source:%Object,dest:Serializer.Serializable.Object</FormalSpec>
+<Method name="ConvertObject">
+<FormalSpec>source:%Object</FormalSpec>
+<ReturnType>Serializer.Serializable.Object</ReturnType>
 <Implementation><![CDATA[
+	set dest = ##class(Serializer.Serializable.Object).%New()
 	set iterator = source.$getIterator()
 	while(iterator.$getNext(.key, .val)){
-		set propId = dest.%ClassName(1)_"||"_key
-		if (##class(%Dictionary.PropertyDefinition).%ExistsId(propId)){
-			set prop = ##class(%Dictionary.PropertyDefinition).%OpenId(propId)
-			set $property(dest, key) = ..ConvertVal(val, prop.Type)
-		}
-		else{
-			set $property(dest, key) = ..ConvertVal(val)
-		}
+		set $property(dest, key) = ..ConvertVal(val)
 	}
+	return dest
 ]]></Implementation>
 </Method>
 
@@ -50,15 +46,13 @@
 </Method>
 
 <Method name="ConvertVal">
-<FormalSpec>val,classname:%String="Serializer.Serializable.Object"</FormalSpec>
+<FormalSpec>val</FormalSpec>
 <Implementation><![CDATA[
 	if ('$isobject(val)){
 		return val
 	}
 	elseif(val.%IsA("%Object")){
-		set obj = $classmethod(classname, "%New")
-		do ..FillObject(val, obj)
-		return obj
+		return ..ConvertObject(val)
 	}
 	elseif(val.%IsA("%Array")){
 		return ..ConvertArray(val)

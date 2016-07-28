@@ -94,5 +94,32 @@
 <Implementation><![CDATA[	return $data(..%prop(propertyName)) || ..%data.$isDefined(propertyName)
 ]]></Implementation>
 </Method>
+
+<Method name="Convert">
+<FormalSpec>className:%String</FormalSpec>
+<Implementation><![CDATA[
+	set obj = $classmethod(className, "%New")
+	set it = ..GetIterator()
+	while (it.GetNext(.key, .val)){
+		set propId = className_"||"_key
+		if ('$isobject(val)){
+			set $property(obj, key) = val
+		}
+		elseif (val.%IsA("Serializer.Serializable.Object")){
+			if (##class(%Dictionary.PropertyDefinition).%ExistsId(propId)){
+				set prop = ##class(%Dictionary.PropertyDefinition).%OpenId(propId)
+				set $property(obj, key) = val.Convert(prop.Type)
+			}
+			else{
+				set $property(obj, key) = val
+			}
+		}
+		else{
+			set $property(obj, key) = val
+		}
+	}
+	return obj
+]]></Implementation>
+</Method>
 </Class>
 </Export>
