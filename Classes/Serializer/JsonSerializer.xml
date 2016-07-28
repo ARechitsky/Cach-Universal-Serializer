@@ -12,9 +12,7 @@
 
 <Method name="InternalSerializeDataType">
 <FormalSpec>object:%DataType,stream:%Stream.Object</FormalSpec>
-<Implementation><![CDATA[
-	// call only if trying to serialize string or number
-	$$$do(stream.Write(object))
+<Implementation><![CDATA[	$$$throw("Can serialize only objects and arrays")
 ]]></Implementation>
 </Method>
 

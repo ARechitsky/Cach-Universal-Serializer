@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Serializer.JsonDeserializer">
+<Super>Serializer.AbstractDeserializer</Super>
+<TimeCreated>64128,345.751689</TimeCreated>
+
+<Method name="InternalDeserialize">
+<FormalSpec>stream:%Stream.Object,classname:%String</FormalSpec>
+<Implementation><![CDATA[
+	if ($classmethod(classname, "%IsA", "Serializer.Serializable.Object")){
+		return ..ConvertVal(##class(%Object).$fromJSON(stream), classname)
+	}
+	elseif ($classmethod(classname, "%IsA", "%Array")){
+		return ..ConvertVal(##class(%Array).$fromJSON(stream))
+	}
+	else{
+		$$$throw("Expected serializable object or datatype, got '"_classname_"'")
+	}
+]]></Implementation>
+</Method>
+
+<Method name="FillObject">
+<FormalSpec>source:%Object,dest:Serializer.Serializable.Object</FormalSpec>
+<Implementation><![CDATA[
+	set iterator = source.$getIterator()
+	while(iterator.$getNext(.key, .val)){
+		set propId = dest.%ClassName(1)_"||"_key
+		if (##class(%Dictionary.PropertyDefinition).%ExistsId(propId)){
+			set prop = ##class(%Dictionary.PropertyDefinition).%OpenId(propId)
+			set $property(dest, key) = ..ConvertVal(val, prop.Type)
+		}
+		else{
+			set $property(dest, key) = ..ConvertVal(val)
+		}
+	}
+]]></Implementation>
+</Method>
+
+<Method name="ConvertArray">
+<FormalSpec>source:%Array</FormalSpec>
+<ReturnType>%Array</ReturnType>
+<Implementation><![CDATA[
+	set dest = ##class(%Array).%New()
+	set iterator = source.$getIterator()
+	while(iterator.$getNext(.key, .val)){
+		set $property(dest, key) = ..ConvertVal(val)
+	}
+	return dest
+]]></Implementation>
+</Method>
+
+<Method name="ConvertVal">
+<FormalSpec>val,classname:%String="Serializer.Serializable.Object"</FormalSpec>
+<Implementation><![CDATA[
+	if ('$isobject(val)){
+		return val
+	}
+	elseif(val.%IsA("%Object")){
+		set obj = $classmethod(classname, "%New")
+		do ..FillObject(val, obj)
+		return obj
+	}
+	elseif(val.%IsA("%Array")){
+		return ..ConvertArray(val)
+	}
+	else{
+		return val
+	}
+]]></Implementation>
+</Method>
+</Class>
+</Export>
