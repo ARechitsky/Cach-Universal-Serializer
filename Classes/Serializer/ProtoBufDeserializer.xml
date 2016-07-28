@@ -23,7 +23,7 @@
 		if ($classmethod(propType, "%IsA", "Serializer.Serializable.Object")){
 			set $property(object, propName) = ..ParseObject(stream, propType, .tmp)
 		}
-		elseif($classmethod(propType, "%IsA", "%DataType"){
+		elseif($classmethod(propType, "%IsA", "%DataType")){
 			if (type = 2){
 				set $property(object, propName) = ..ParseString(stream, .tmp)
 			}
