@@ -21,7 +21,7 @@
 <ReturnType>%Status</ReturnType>
 <ServerOnly>1</ServerOnly>
 <Implementation><![CDATA[
-	if ('$classmethod(classname, "%IsA", "Serializer.Serializeable.Object")){
+	if ('$classmethod(classname, "%IsA", "Serializer.Serializable.Object")){
 		$$$throw("Can't get properties for '"_classname_"'")
 	}
 	set iterator = $classmethod(classname, "GetStaticIterator")
@@ -31,6 +31,7 @@
 		set ..PropToTag(key) = i
 		set ..TagToProp(i) = key
 	}
+	return $$$OK
 ]]></Implementation>
 </Method>
 </Class>

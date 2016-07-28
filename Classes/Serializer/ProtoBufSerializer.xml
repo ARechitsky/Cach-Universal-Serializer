@@ -7,30 +7,30 @@
 <Method name="InternalSerializeObject">
 <FormalSpec>object:Serializer.Serializable.Object,stream:%Stream.Object</FormalSpec>
 <Implementation><![CDATA[
+	set objStream = ##class(%Stream.TmpBinary).%New()
 	set metadata = ##class(ProtoBufMetadataProvider).%New(object.%ClassName(1))
 	set iterator = object.GetStaticIterator()
 	while(iterator.GetNext(.prop)){
 		set tag = metadata.PropToTag(prop)
 		set propVal = $property(object, prop)
 		set type = $s($number(propVal)'="": 0, 1: 2)
-		$$$do(stream.Write((tag * 8) + type))
+		do ..InternalSerializeVarInt((tag * 8) + type, objStream)
 		if (type = 2) {
-			set propStream = ##class(%Stream.TmpBinary).%New()
-			do ..InternalSerialize(propVal, propStream)
-			set len = propStream.Size
-			$$$do(stream.Write(len))
-			$$$do(propStream.Rewind())
-			while(propStream.AtEnd){
-				set read = stream.Read()
-				$$$do(stream.Write(read))
-			}
+			do ..InternalSerialize(propVal, objStream)
 		}
 		elseif (type = 0){
-			do ..InternalSerialize(propVal, stream)
+			do ..InternalSerialize(propVal, objStream)
 		}
 		else {
 			$$$throw("it's not valid type")
 		}
+	}
+	set len = objStream.Size
+	do ..InternalSerializeVarInt(len, stream)
+	$$$do(objStream.Rewind())
+	while('objStream.AtEnd){
+		set read = objStream.Read()
+		$$$do(stream.Write(read))
 	}
 ]]></Implementation>
 </Method>

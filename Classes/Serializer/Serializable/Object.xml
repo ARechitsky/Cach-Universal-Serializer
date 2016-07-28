@@ -36,7 +36,7 @@
 		set ret = ret_""""_prop.Name_""","
 	}
 	if (ret'=""){
-		set ret = ret_"$lb("_$e(ret,1,*-1)_")"
+		set ret = "$lb("_$e(ret,1,*-1)_")"
 	}
 	else {
 		set ret = """"""

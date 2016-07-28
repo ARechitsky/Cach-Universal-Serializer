@@ -74,8 +74,11 @@
 		set b = $a(b)
 		if (b >= 128) {
 			set b = b - 128
+		}
+		else{
 			set end = $$$YES
 		}
+			
 		set a = a + (b * power)
 		set power = power * 128
 	}
@@ -92,6 +95,24 @@
 		set a = (-a-1)
 	}
 	return a/2
+]]></Implementation>
+</Method>
+
+<Method name="InternalDeserialize">
+<FormalSpec>stream:%Stream.Object,classname:%String</FormalSpec>
+<Implementation><![CDATA[
+	if ($classmethod(classname, "%IsA", "Serializer.Serializable.Object")){
+		return ..ParseObject(stream, classname)
+	}
+	elseif (classname = "%String"){
+		return ..ParseString(stream)
+	}
+	elseif (classname = "%Integer"){
+		return ..ParseZigZag(stream)
+	}
+	else{
+		$$$throw("Expected serializable object or datatype, got '"_propType_"'")
+	}
 ]]></Implementation>
 </Method>
 </Class>
