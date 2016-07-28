@@ -14,6 +14,7 @@
 		set tag = metadata.PropToTag(prop)
 		set propVal = $property(object, prop)
 		set type = $s($number(propVal)'="": 0, 1: 2)
+		if (propVal = "") continue
 		do ..InternalSerializeVarInt((tag * 8) + type, objStream)
 		if (type = 2) {
 			do ..InternalSerialize(propVal, objStream)
