@@ -4,6 +4,19 @@
 <Super>Serializer.AbstractSerializer</Super>
 <TimeCreated>64127,51157.511037</TimeCreated>
 
+<Method name="InternalSerializeObject">
+<FormalSpec>object:Serializer.Serializable.Object,stream:%Stream.Object</FormalSpec>
+<Implementation><![CDATA[
+	set metadata = ##class(ProtoBufMetadataProvider).%New(object.%ClassName(1))
+	set iterator = object.GetStaticIterator()
+	while(iterator.GetNext(.prop)){
+		set tag = metadata.PropToTag(prop)
+		set propVal = $property(object, prop)
+		set type = $s($number(propVal)'="": 0, 1: 2)
+	}
+]]></Implementation>
+</Method>
+
 <Method name="InternalSerializeDataType">
 <FormalSpec>object:%DataType,stream:%Stream.Object</FormalSpec>
 <Implementation><![CDATA[
